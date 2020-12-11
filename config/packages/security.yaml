@@ -15,7 +15,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            pattern: ^\/(?!.*login).*$ # adicionar esta linha
+            pattern: ^\/(?!.*login|especialidades_html).*$ # adicionar esta linha
             anonymous: ~
             logout: ~
             guard:

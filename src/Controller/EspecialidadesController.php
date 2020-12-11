@@ -7,6 +7,9 @@ use App\Helper\EspecialidadeFactory;
 use App\Helper\ExtratorDadosRequest;
 use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class EspecialidadesController extends BaseController
 {
@@ -14,9 +17,18 @@ class EspecialidadesController extends BaseController
         EntityManagerInterface $entityManager,
          EspecialidadeRepository $repository,
          EspecialidadeFactory $especialidadeFactory,
-         ExtratorDadosRequest $extrador
+         ExtratorDadosRequest $extrador,
+         CacheItemPoolInterface $cache,
+         LoggerInterface $logger
     ) {
-        parent::__construct($repository, $entityManager, $especialidadeFactory, $extrador);
+        parent::__construct(
+            $repository,
+            $entityManager,
+            $especialidadeFactory,
+            $extrador,
+            $cache,
+            $logger
+        );
     }
 
      /**
@@ -36,5 +48,24 @@ class EspecialidadesController extends BaseController
             ->setDescricao($entidadeEnviada->getDescricao());
         
         return $entidadeExistente;
+    }
+    
+    public function cachePrefix(): string
+    {
+        return 'especialidade_';   
+    }
+
+    /**
+     * @Route("/especialidades_html")
+     *
+     * @return void
+     */
+    public function especialidadesEmHtml()
+    {
+        $especialidades = $this->repository->findAll();
+
+        return $this->render('especialidades.html.twig', [
+            'especialidades' => $especialidades
+        ]);
     }
 }
